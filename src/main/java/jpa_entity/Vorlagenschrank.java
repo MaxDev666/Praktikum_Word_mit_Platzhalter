@@ -16,10 +16,18 @@ public class Vorlagenschrank implements Serializable{
 	@Column(name = "id", unique = true)
 	private String id;
 	
-	@Column(name = "mainDokument", nullable = false)
-	private String dokumentinhalt;
+	@Column(nullable = false)
+	private String maindokument;
 	
-    public String getId() {
+	public String getMaindokument() {
+		return maindokument;
+	}
+
+	public void setMaindokument(String mainDokument) {
+		this.maindokument = mainDokument;
+	}
+
+	public String getId() {
 		return id;
 	}
 
@@ -27,13 +35,4 @@ public class Vorlagenschrank implements Serializable{
 		this.id = id;
 	}
 
-	public String getWord() {
-		return dokumentinhalt;
-	}
-
-	public void setWord(String word) {
-		this.dokumentinhalt = word;
-	}
-    
-    
 }
