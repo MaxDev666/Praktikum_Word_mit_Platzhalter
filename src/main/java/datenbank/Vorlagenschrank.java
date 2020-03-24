@@ -17,14 +17,14 @@ public class Vorlagenschrank implements Serializable{
 	private String id;
 	
 	@Column(nullable = false)
-	private String maindokument;
+	private String xmlpfad;
 	
-	public String getMaindokument() {
-		return maindokument;
+	public String getXMLPfad() {
+		return xmlpfad;
 	}
 
-	public void setMaindokument(String mainDokument) {
-		this.maindokument = mainDokument;
+	public void setXMLPfad(String XMLPfad) {
+		this.xmlpfad = XMLPfad;
 	}
 
 	public String getId() {

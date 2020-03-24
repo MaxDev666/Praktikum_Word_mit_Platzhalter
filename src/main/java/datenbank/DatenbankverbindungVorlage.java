@@ -11,9 +11,9 @@ import javax.persistence.TypedQuery;
 
 public class DatenbankverbindungVorlage {
 	private static EntityManagerFactory emf = Persistence
-			.createEntityManagerFactory("Word_mit_Platzhalter");
+			.createEntityManagerFactory("WordPlatzhalter");
 
-	public static void addVorlage(String id, String maindokument) {
+	public static void addVorlage(String id, String XMLPfad) {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = null;
@@ -22,7 +22,7 @@ public class DatenbankverbindungVorlage {
 			et.begin();
 			Vorlagenschrank vorlage = new Vorlagenschrank();
 			vorlage.setId(id);
-			vorlage.setMaindokument(maindokument);
+			vorlage.setXMLPfad(XMLPfad);
 			em.persist(vorlage);
 			et.commit();
 		} catch (Exception e) {
@@ -35,7 +35,7 @@ public class DatenbankverbindungVorlage {
 		}
 	}
 
-	public static void getVorlage(String id) {
+	public static String getVorlage(String id) {
 		EntityManager em = emf.createEntityManager();
 		String query = "SELECT vorlage FROM Vorlagenschrank vorlage WHERE vorlage.id=:ID";
 
@@ -44,12 +44,12 @@ public class DatenbankverbindungVorlage {
 		Vorlagenschrank vorlage = null;
 		try {
 			vorlage = tq.getSingleResult();
-			System.out.println(vorlage.getMaindokument());
 		} catch (NoResultException e) {
 			e.printStackTrace();
 		} finally {
 			em.close();
 		}
+		return vorlage.getXMLPfad();
 
 	}
 
@@ -60,7 +60,7 @@ public class DatenbankverbindungVorlage {
 		List<Vorlagenschrank> vorlagen;
 		try {
 			vorlagen = tq.getResultList();
-			vorlagen.forEach(vorlage -> System.out.println(vorlage.getMaindokument()));
+			vorlagen.forEach(vorlage -> System.out.println(vorlage.getXMLPfad()));
 
 		} catch (NoResultException e) {
 			e.printStackTrace();
@@ -69,7 +69,7 @@ public class DatenbankverbindungVorlage {
 		}
 	}
 	
-	public static void changeVorlage(String id, String maindokument) {
+	public static void changeVorlage(String id, String XMLPfad) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = null;
 		Vorlagenschrank vorlage = null;
@@ -77,7 +77,7 @@ public class DatenbankverbindungVorlage {
 			et = em.getTransaction();
 			et.begin();
 			vorlage = em.find(Vorlagenschrank.class, id);
-			vorlage.setMaindokument(maindokument);
+			vorlage.setXMLPfad(XMLPfad);
 			em.persist(vorlage);
 			et.commit();
 		} catch (Exception e) {
