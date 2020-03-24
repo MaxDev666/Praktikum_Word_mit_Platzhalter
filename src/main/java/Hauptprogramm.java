@@ -2,6 +2,7 @@
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
+import org.checkerframework.common.value.qual.StaticallyExecutable;
 import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
@@ -25,11 +26,9 @@ public class Hauptprogramm {
 
 	public static String docxtoxml(String inputpath, String filetype) throws Exception {
 		boolean save = true;
-		String inputfilepath;
-		String outputfilepath;
 		
-		inputfilepath = inputpath+filetype;
-		outputfilepath = inputpath+".xml";
+		String inputfilepath = inputpath+filetype;
+		String outputfilepath = inputpath+".xml";
 		
 		WordprocessingMLPackage wmlPackage = Docx4J.load(new java.io.File(inputfilepath));
 
