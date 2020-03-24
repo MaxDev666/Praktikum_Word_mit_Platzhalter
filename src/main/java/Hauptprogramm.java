@@ -1,30 +1,36 @@
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 import datenbank.DatenbankverbindungVorlage;
-import junit.framework.Test;
 
 public class Hauptprogramm {
 
 	public static void main(String[] args) throws Exception {
 		
-		//String id = "Vorlage1";
-		docxtoxml("C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage3_Bescheid_BZST.docx",
-				  "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\test.xml");
+		String id = "Vorlage1";
+		String inputpath = "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage1_Bescheid_BZST";
+		String filetype = ".docx";
+		String outputpath = docxtoxml(inputpath, filetype);
 //		xmltodocx("C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\test.xml", 
 //				  "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\test.docx");
 		
-		//DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
+		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
+		db.addVorlage(id, outputpath);
 		
-
 	}
 
-	public static void docxtoxml(String inputfilepath, String outputfilepath) throws Exception {
-		boolean save = false;
-
+	public static String docxtoxml(String inputpath, String filetype) throws Exception {
+		boolean save = true;
+		String inputfilepath;
+		String outputfilepath;
+		
+		inputfilepath = inputpath+filetype;
+		outputfilepath = inputpath+".xml";
+		
 		WordprocessingMLPackage wmlPackage = Docx4J.load(new java.io.File(inputfilepath));
 
 		try {
@@ -38,6 +44,7 @@ public class Hauptprogramm {
 			exc.printStackTrace();
 			throw new RuntimeException(exc);
 		}
+		return outputfilepath;
 	}
 	
 	public static void xmltodocx(String inputfilepath, String outputfilepath) throws Exception{
