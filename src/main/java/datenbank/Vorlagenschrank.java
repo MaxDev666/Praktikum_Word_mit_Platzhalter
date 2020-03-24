@@ -1,4 +1,4 @@
-package jpa_entity;
+package datenbank;
 
 import java.io.Serializable;
 

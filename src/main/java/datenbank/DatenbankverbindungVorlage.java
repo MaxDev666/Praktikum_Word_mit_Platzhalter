@@ -1,3 +1,5 @@
+package datenbank;
+
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -7,21 +9,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import jpa_entity.Vorlagenschrank;
-
-public class datenbank_test {
+public class DatenbankverbindungVorlage {
 	private static EntityManagerFactory emf = Persistence
 			.createEntityManagerFactory("Word_mit_Platzhalter");
-
-	public static void main(String[] args) {
-		getVorlagen();
-		deleteVorlage("Vorlage1");
-		deleteVorlage("Vorlage2");
-		deleteVorlage("Vorlage3");
-		deleteVorlage("Vorlage4");
-		
-		emf.close();
-	}
 
 	public static void addVorlage(String id, String maindokument) {
 
@@ -122,5 +112,4 @@ public class datenbank_test {
 			em.close();
 		}
 	}
-
 }
