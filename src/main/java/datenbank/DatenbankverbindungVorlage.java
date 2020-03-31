@@ -20,7 +20,7 @@ public class DatenbankverbindungVorlage {
 		die Spalten der Tabelle mit den Parameterwerten ausgefüllt
 		Danach wird die Transaction und somit die Befehle committet. 
 		Beim Fehlerfall werden die Befehle zurück gesetzt*/
-	public static void addVorlage(String id, String XMLPfad) {
+	public static void addVorlage(String id, String vorlagenpfad) {
 		
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = null;
@@ -29,7 +29,7 @@ public class DatenbankverbindungVorlage {
 			et.begin();
 			Vorlagenschrank vorlage = new Vorlagenschrank();
 			vorlage.setId(id);
-			vorlage.setXMLPfad(XMLPfad);
+			vorlage.setVorlagenpfad(vorlagenpfad);
 			em.persist(vorlage);
 			et.commit();
 		} catch (Exception e) {
@@ -61,7 +61,7 @@ public class DatenbankverbindungVorlage {
 		} finally {
 			em.close();
 		}
-		return vorlage.getXMLPfad();
+		return vorlage.getVorlagenpfad();
 
 	}
 
@@ -77,7 +77,7 @@ public class DatenbankverbindungVorlage {
 		List<Vorlagenschrank> vorlagen;
 		try {
 			vorlagen = tq.getResultList();
-			vorlagen.forEach(vorlage -> System.out.println(vorlage.getXMLPfad()));
+			vorlagen.forEach(vorlage -> System.out.println(vorlage.getVorlagenpfad()));
 
 		} catch (NoResultException e) {
 			e.printStackTrace();
@@ -89,7 +89,7 @@ public class DatenbankverbindungVorlage {
 	/* Ändern der Vorlage mit übegebener ID durch den übergebenen XMLPfad
 	 * Es wird nach der Vorlage mit der als Parameter übergebenen ID gesucht und bei dieser der XMLPfad ersetzt 
 	 */
-	public static void changeVorlage(String id, String XMLPfad) {
+	public static void changeVorlage(String id, String vorlagenpfad) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = null;
 		Vorlagenschrank vorlage = null;
@@ -97,7 +97,7 @@ public class DatenbankverbindungVorlage {
 			et = em.getTransaction();
 			et.begin();
 			vorlage = em.find(Vorlagenschrank.class, id);
-			vorlage.setXMLPfad(XMLPfad);
+			vorlage.setVorlagenpfad(vorlagenpfad);
 			em.persist(vorlage);
 			et.commit();
 		} catch (Exception e) {

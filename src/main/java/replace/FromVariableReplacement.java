@@ -2,23 +2,15 @@ package replace;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.docx4j.TraversalUtil;
 import org.docx4j.TraversalUtil.CallbackImpl;
 import org.docx4j.XmlUtils;
-import org.docx4j.customXmlProperties.DatastoreItem;
-import org.docx4j.customXmlProperties.SchemaRefs;
-import org.docx4j.customXmlProperties.SchemaRefs.SchemaRef;
 import org.docx4j.jaxb.Context;
 import org.docx4j.model.datastorage.migration.AbstractMigratorUsingAnswersFormat;
 import org.docx4j.model.datastorage.migration.VariablePrepare;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.io.SaveToZipFile;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.CustomXmlDataStoragePropertiesPart;
-import org.docx4j.openpackaging.parts.opendope.JaxbCustomXmlDataStoragePart;
-import org.docx4j.openpackaging.parts.relationships.RelationshipsPart.AddPartBehaviour;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.Text;
@@ -54,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author jharrop
  * @since 3.0.0
  */
-public class FromVariableReplacement extends AbstractMigratorUsingAnswersFormat {
+public class FromVariableReplacement extends AbstractMigratorUsingSimpleTextFormat {
 	
 	private static Logger log = LoggerFactory.getLogger(FromVariableReplacement.class);
 		

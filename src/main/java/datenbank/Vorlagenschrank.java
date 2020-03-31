@@ -20,14 +20,14 @@ public class Vorlagenschrank implements Serializable{
 	
 	//der XMLPfad darf nicht leer sein
 	@Column(nullable = false)
-	private String xmlpfad;
+	private String vorlagenpfad;
 	
-	public String getXMLPfad() {
-		return xmlpfad;
+	public String getVorlagenpfad() {
+		return vorlagenpfad;
 	}
 
-	public void setXMLPfad(String XMLPfad) {
-		this.xmlpfad = XMLPfad;
+	public void setVorlagenpfad(String Vorlagenpfad) {
+		this.vorlagenpfad = Vorlagenpfad;
 	}
 
 	public String getId() {
