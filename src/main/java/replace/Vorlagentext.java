@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlValue;
     "value"
 })
 
-public class Text {
+public class Vorlagentext {
 
     @XmlValue
     protected String value;

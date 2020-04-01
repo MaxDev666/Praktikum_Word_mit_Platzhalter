@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
+import org.docx4j.fonts.substitutions.FontSubstitutions.Replace;
+
 /**
  * <p>Java class for anonymous complex type.
  * 
@@ -33,11 +35,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://itzbund.de/texte", name = "", propOrder = {
     "text"
 })
-@XmlSeeAlso({Text.class})
-public class Texte {
+@XmlSeeAlso({Vorlagentext.class})
+public class Vorlagentexte {
 	
-	@XmlElement(name="text", type=Text.class)
-	protected List<Text> text;
+	@XmlElement(name="text", type=Vorlagentext.class)
+	protected List<Vorlagentext> text;
 
 	/**
      * Gets the value of the text property.
@@ -61,9 +63,9 @@ public class Texte {
      * 
      * 
      */
-    public List<Text> getText() {
+    public List<Vorlagentext> getText() {
         if (text == null) {
-            text = new ArrayList<Text>();
+            text = new ArrayList<Vorlagentext>();
         }
         return this.text;
     }

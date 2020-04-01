@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author jharrop
  * @since 3.0.0
  */
-public class FromVariableReplacement extends AbstractMigratorUsingSimpleTextFormat {
+public class FromVariableReplacement extends AbstractMigratorUsingAnswersFormat {
 	
 	private static Logger log = LoggerFactory.getLogger(FromVariableReplacement.class);
 		

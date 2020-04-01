@@ -7,7 +7,7 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.opendope.JaxbCustomXmlDataStoragePart;
 
-public class SimpleTextPart extends JaxbCustomXmlDataStoragePart<replace.Texte>{
+public class SimpleTextPart extends JaxbCustomXmlDataStoragePart<Vorlagentexte>{
 
 	public SimpleTextPart(PartName partName) throws InvalidFormatException {
 		super(partName);
@@ -23,8 +23,8 @@ public class SimpleTextPart extends JaxbCustomXmlDataStoragePart<replace.Texte>{
 
 		SimpleTextPart sap = new SimpleTextPart(new PartName("/testing"));
 		
-		Texte texte = new Texte();
-		Text text = new Text();
+		Vorlagentexte texte = new Vorlagentexte();
+		Vorlagentext text = new Vorlagentext();
 		texte.getText().add(text);
 		
 		text.setId("id1");

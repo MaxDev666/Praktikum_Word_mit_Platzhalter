@@ -27,7 +27,7 @@ public class AbstractMigratorUsingSimpleTextFormat extends AbstractMigrator{
 		simpleTextPart = new SimpleTextPart(new PartName("/customXml/item1.xml")); 
 		pkgOut.getMainDocumentPart().addTargetPart(simpleTextPart, AddPartBehaviour.RENAME_IF_NAME_EXISTS);
 		storeItemID = addPropertiesPart(pkgOut, simpleTextPart, null);	
-		simpleTextPart.setJaxbElement(new Texte());
+		simpleTextPart.setJaxbElement(new Vorlagentexte());
 		
 	}
 	
@@ -53,7 +53,7 @@ public class AbstractMigratorUsingSimpleTextFormat extends AbstractMigrator{
 	private void addPartEntries(String key) {
 		
 		// text
-		replace.Text t = new replace.Text();
+		Vorlagentext t = new Vorlagentext();
 		t.setId(key);;
 		t.setValue("${" + key + "}");
 		simpleTextPart.getJaxbElement().getText().add(t);

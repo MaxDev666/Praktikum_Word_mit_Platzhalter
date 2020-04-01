@@ -1,5 +1,6 @@
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import javax.xml.bind.JAXBContext;
 
@@ -17,7 +18,8 @@ public class Hauptprogramm {
 
 	public static void main(String[] args) throws Exception {
 		// Zu Testzwecken, zum Kopieren des Testpfads
-		// C:\Users\Maximilian Hett\Desktop\Studium\ITZBund\Praktikuminternes\Test\Vorlage2_Bescheid_BZST.docx
+		// C:\Users\Maximilian
+		// Hett\Desktop\Studium\ITZBund\Praktikuminternes\Test\Vorlage2_Bescheid_BZST.docx
 
 		// Je nach übergebenen Parametern wird eine entsprechende Methode zur
 		// Verarbeitung der Vorlage ausgeführt
@@ -38,7 +40,6 @@ public class Hauptprogramm {
 			replacePlaceholder(args[1], args[2]);
 			break;
 		}
-
 	}
 
 	/*
@@ -48,14 +49,14 @@ public class Hauptprogramm {
 	 * abgelegt. Der Pfad zu diese Datei wird anschließend in der Datenbank
 	 * gespeichert
 	 */
-	public static void hinzufuegenVorlage(String id, String fullfilepath) throws Exception {
+	public static void hinzufuegenVorlage(String id, String documentpath) throws Exception {
 		/*
 		 * String filepath = fullfilepath.split("[.]")[0]; String filetype = "." +
 		 * fullfilepath.split("[.]")[1]; String outputpath = docxtoxml(filepath,
 		 * filetype);
 		 */
 		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		db.addVorlage(id, fullfilepath);
+		db.addVorlage(id, documentpath);
 	}
 
 	/*
@@ -79,7 +80,7 @@ public class Hauptprogramm {
 		if (newPath.trim().equals("")) {
 			String oldPath = ansehenVorlage(id);
 			System.out.println(oldPath);
-		}else {
+		} else {
 			DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
 			db.changeVorlage(id, newPath);
 		}
@@ -100,28 +101,24 @@ public class Hauptprogramm {
 		System.out.println(outputfilepath);
 		replace.FromVariableReplacement.main(docxfilepath, outputfilepath);
 
-		/*
-		 * WordprocessingMLPackage wordMLPackage = Docx4J.load(new
-		 * File(outputfilepath)); FileInputStream xmlStream = new FileInputStream(new
-		 * File(xmlfilepath));
-		 * 
-		 * // Do the binding: // FLAG_NONE means that all the steps of the binding will
-		 * be done, // otherwise you could pass a combination of the following flags: //
-		 * FLAG_BIND_INSERT_XML: inject the passed XML into the document //
-		 * FLAG_BIND_BIND_XML: bind the document and the xml (including any OpenDope //
-		 * handling) // FLAG_BIND_REMOVE_SDT: remove the content controls from the
-		 * document (only the // content remains) // FLAG_BIND_REMOVE_XML: remove the
-		 * custom xml parts from the document
-		 * 
-		 * Docx4J.bind(wordMLPackage, xmlStream, Docx4J.FLAG_NONE); // If a document
-		 * doesn't include the Opendope definitions, eg. the XPathPart, // then the only
-		 * thing you can do is insert the xml // the example document
-		 * binding-simple.docx doesn't have an XPathPart.... //
-		 * Docx4J.bind(wordMLPackage, xmlStream, Docx4J.FLAG_BIND_INSERT_XML | //
-		 * Docx4J.FLAG_BIND_BIND_XML); Docx4J.save(wordMLPackage, new
-		 * File(outputfilepath), Docx4J.FLAG_NONE); System.out.println("Saved: " +
-		 * outputfilepath);
-		 */
+		WordprocessingMLPackage wordMLPackage = Docx4J.load(new File(outputfilepath)); 
+		FileInputStream xmlStream = new FileInputStream(new	File(xmlfilepath));
+
+		// Do the binding: 
+		// FLAG_NONE means that all the steps of the binding will be done, 
+		// otherwise you could pass a combination of the following flags: 
+		// FLAG_BIND_INSERT_XML: inject the passed XML into the document 
+		// FLAG_BIND_BIND_XML: bind the document and the xml (including any OpenDope handling) 
+		// FLAG_BIND_REMOVE_SDT: remove the content controls from the document (only the content remains) 
+		// FLAG_BIND_REMOVE_XML: remove the custom xml parts from the document
+		
+		Docx4J.bind(wordMLPackage, xmlStream, Docx4J.FLAG_NONE); 
+		// If a document doesn't include the Opendope definitions, eg. the XPathPart, 
+		// then the only thing you can do is insert the xml 
+		// the example document binding-simple.docx doesn't have an XPathPart.... 
+		// Docx4J.bind(wordMLPackage, xmlStream, Docx4J.FLAG_BIND_INSERT_XML | Docx4J.FLAG_BIND_BIND_XML); 
+		Docx4J.save(wordMLPackage, new File(outputfilepath), Docx4J.FLAG_NONE); 
+		System.out.println("Saved: " + outputfilepath);
 	}
 
 	/*
