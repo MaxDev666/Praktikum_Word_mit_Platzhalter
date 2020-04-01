@@ -1,5 +1,7 @@
 package datenbank;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,6 +10,8 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+
+import junit.framework.Test;
 
 public class DatenbankverbindungVorlage {
 	//es wird eine EntityManagerFactory erstellt, mit der die einzelnen Entitymanager erzeugt werden
@@ -54,14 +58,19 @@ public class DatenbankverbindungVorlage {
 		TypedQuery<Vorlagenschrank> tq = em.createQuery(query, Vorlagenschrank.class);
 		tq.setParameter("ID", id);
 		Vorlagenschrank vorlage = null;
+		String rueckgabe = null;
 		try {
 			vorlage = tq.getSingleResult();
+			rueckgabe = vorlage.getVorlagenpfad();
 		} catch (NoResultException e) {
-			e.printStackTrace();
+			/*StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			String exAsString = sw.toString();*/
+			rueckgabe = "Eintrag nicht vorhanden"; 
 		} finally {
 			em.close();
 		}
-		return vorlage.getVorlagenpfad();
+		return rueckgabe;
 
 	}
 

@@ -1,12 +1,14 @@
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 
 import org.docx4j.Docx4J;
 import org.docx4j.com.google.common.util.concurrent.ExecutionError;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.org.apache.xpath.operations.Equals;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 
@@ -25,7 +27,7 @@ public class Hauptprogramm {
 		// Verarbeitung der Vorlage ausgeführt
 		switch (args[0]) {
 		case "add":
-			hinzufuegenVorlage(args[1], args[2]);
+			hinzufuegenVorlage(args[2]);
 			break;
 		case "get":
 			ansehenVorlage(args[1]);
@@ -49,14 +51,24 @@ public class Hauptprogramm {
 	 * abgelegt. Der Pfad zu diese Datei wird anschließend in der Datenbank
 	 * gespeichert
 	 */
-	public static void hinzufuegenVorlage(String id, String documentpath) throws Exception {
+	public static String hinzufuegenVorlage(String documentpath) throws Exception {
 		/*
 		 * String filepath = fullfilepath.split("[.]")[0]; String filetype = "." +
 		 * fullfilepath.split("[.]")[1]; String outputpath = docxtoxml(filepath,
 		 * filetype);
 		 */
+		String[] splitpath = documentpath.split(Pattern.quote("\\"));
+		String id = splitpath[splitpath.length-1];
+		id = id.split("[.]")[0];
 		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		db.addVorlage(id, documentpath);
+		String rueckgabe = db.getVorlage(id);
+		if (rueckgabe == "Eintrag nicht vorhanden") {
+			db.addVorlage(id, documentpath);
+			rueckgabe = "";
+		}else {
+			System.out.println(rueckgabe);
+		}
+		return rueckgabe;
 	}
 
 	/*
@@ -66,10 +78,9 @@ public class Hauptprogramm {
 	 */
 	public static String ansehenVorlage(String id) throws Exception {
 		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		String vorlage = db.getVorlage(id);
-		System.out.println(vorlage);
-		;
-		return vorlage;
+		String rueckgabe = db.getVorlage(id);
+		System.out.println(rueckgabe);
+		return rueckgabe;
 		/*
 		 * String filepath = fullfilepath.split("[.]")[0]; String filetype = "." +
 		 * fullfilepath.split("[.]")[1]; xmltodocx(filepath, filetype);
@@ -78,18 +89,32 @@ public class Hauptprogramm {
 
 	public static void bearbeitenVorlage(String id, String newPath) throws Exception {
 		if (newPath.trim().equals("")) {
-			String oldPath = ansehenVorlage(id);
-			System.out.println(oldPath);
+			String rueckgabe = ansehenVorlage(id);
 		} else {
 			DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-			db.changeVorlage(id, newPath);
+			String rueckgabe = db.getVorlage(id);
+			if (rueckgabe == "Eintrag nicht vorhanden") {
+				System.out.println(rueckgabe);
+			}else {
+				db.changeVorlage(id, newPath);
+			}
 		}
-
 	}
 
 	public static void loeschenVorlage(String id) {
 		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		db.deleteVorlage(id);
+		String rueckgabe = db.getVorlage(id);
+		if (rueckgabe == "Eintrag nicht vorhanden") {
+			System.out.println(rueckgabe);
+		}else {
+			File vorlage = new File(rueckgabe);
+			if (vorlage.delete()) {
+				System.out.println(vorlage.getName() + " deleted");
+				db.deleteVorlage(id);
+			}else {
+				System.out.println("failed"); 
+			}
+		}
 	}
 
 	public static void replacePlaceholder(String id, String xmlfilepath) throws Exception {
