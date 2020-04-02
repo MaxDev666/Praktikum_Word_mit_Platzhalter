@@ -18,10 +18,11 @@ public class Vorlagenschrank implements Serializable{
 	@Column(name = "id", unique = true)
 	private String id;
 	
-	//der XMLPfad darf nicht leer sein
+	//der vorlagenpfad darf nicht leer sein
 	@Column(nullable = false)
 	private String vorlagenpfad;
 	
+	//Getter und Setter für id und Vorlagenpfad
 	public String getVorlagenpfad() {
 		return vorlagenpfad;
 	}

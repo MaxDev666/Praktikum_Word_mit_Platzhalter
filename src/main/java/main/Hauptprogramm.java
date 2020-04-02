@@ -1,16 +1,18 @@
+package main;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 
 import org.docx4j.Docx4J;
-import org.docx4j.com.google.common.util.concurrent.ExecutionError;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.org.apache.xpath.operations.Equals;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNull;
 
 import datenbank.DatenbankverbindungVorlage;
 
@@ -27,7 +29,7 @@ public class Hauptprogramm {
 		// Verarbeitung der Vorlage ausgeführt
 		switch (args[0]) {
 		case "add":
-			hinzufuegenVorlage(args[2]);
+			String rueckgabe = hinzufuegenVorlage(args[1]);
 			break;
 		case "get":
 			ansehenVorlage(args[1]);
@@ -41,44 +43,38 @@ public class Hauptprogramm {
 		case "replace":
 			replacePlaceholder(args[1], args[2]);
 			break;
+		default:
+			String noOption ="Es wurde keine Option ausgewählt";
+			System.out.println(noOption);	
 		}
 	}
 
 	/*
-	 * Es wird eine Vorlage zur Datenbank hinzugefügt Dazu wird der übergebene Pfad
-	 * der Word-Datei nach dem eigentlichen Pfad sowie dem Dateityp aufgeteilt. Dann
-	 * wird aus der Word-Datei eine XML-Datei erzeugt und die auf dem Dateisystem
-	 * abgelegt. Der Pfad zu diese Datei wird anschließend in der Datenbank
-	 * gespeichert
+	 * Es wird eine Vorlage zur Datenbank hinzugefügt.
+	 * Anhand des Dateipfads wird der Dateiname ermittelt, der als ID verwendet wird.
+	 * Anschließend werden der Dateipfad sowie die neue ID in der Vorlagen-Tabelle gespeichert.
 	 */
 	public static String hinzufuegenVorlage(String documentpath) throws Exception {
-		/*
-		 * String filepath = fullfilepath.split("[.]")[0]; String filetype = "." +
-		 * fullfilepath.split("[.]")[1]; String outputpath = docxtoxml(filepath,
-		 * filetype);
-		 */
 		String[] splitpath = documentpath.split(Pattern.quote("\\"));
 		String id = splitpath[splitpath.length-1];
 		id = id.split("[.]")[0];
-		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		String rueckgabe = db.getVorlage(id);
+		String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
 		if (rueckgabe == "Eintrag nicht vorhanden") {
-			db.addVorlage(id, documentpath);
+			DatenbankverbindungVorlage.addVorlage(id, documentpath);
 			rueckgabe = "";
 		}else {
-			System.out.println(rueckgabe);
+			rueckgabe = "Eintrag vorhanden; bitte bearbeiten, nicht hinzufügen";
 		}
 		return rueckgabe;
 	}
 
 	/*
-	 * Es wird eine Vorlage angezeigt. Dazu wird mithilfe der ID die Datenbank
-	 * gelesen und der Pfad der XML-Datei nach Pfad und Dateityp aufgeteilt.
-	 * Anschließend wird die XML-Datei in ein Word-Dokument umgewandelt.
+	 * Es wird eine Vorlage angezeigt. 
+	 * Dazu wird mithilfe der ID die Datenbank gelesen und der Pfad der Word-Datei zurückgegeben.
+	 * Wenn kein Eintrag gefunden wird, wird ein Fehler zurückgegeben
 	 */
 	public static String ansehenVorlage(String id) throws Exception {
-		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		String rueckgabe = db.getVorlage(id);
+		String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
 		System.out.println(rueckgabe);
 		return rueckgabe;
 		/*
@@ -87,40 +83,68 @@ public class Hauptprogramm {
 		 */
 	}
 
+	/*
+	 * Je nachdem, ob der neue Pfad zur Word-Datei angegeben wurde oder nicht, 
+	 * wird die Vorlage nur ausgelesen oder der Dateipfad in der Datenbank angepasst.
+	 * 
+	 * Wenn kein neuer Pfad angegebe wurde, gehe ich davon aus, 
+	 * dass der User nicht weiß, wo die zu ändernde Vorlage liegt.
+	 * Deshalb wird dabei nur nach einer Vorlage mit der angegebenen ID gesucht.
+	 * 
+	 * Wenn ein Dateipfad angegeben ist, wird nach dem Datenbankeintrag gesucht und 
+	 * bei dem gefundenen Eintrag der Dateipfad geändert
+	 */
 	public static void bearbeitenVorlage(String id, String newPath) throws Exception {
 		if (newPath.trim().equals("")) {
-			String rueckgabe = ansehenVorlage(id);
+			ansehenVorlage(id);
 		} else {
-			DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-			String rueckgabe = db.getVorlage(id);
+			String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
 			if (rueckgabe == "Eintrag nicht vorhanden") {
 				System.out.println(rueckgabe);
 			}else {
-				db.changeVorlage(id, newPath);
+				DatenbankverbindungVorlage.changeVorlage(id, newPath);
 			}
 		}
 	}
 
+	/*
+	 * Es wird eine Vorlage, also der Datenbankeintrag und die Datei gelöscht.
+	 * Dazu wird erst geprüft, ob der Eintrag vorhanden ist.
+	 * Wenn dies der Fall ist, wird die Word-Datei und danach der Datenbankeintrag gelöscht 
+	 */
 	public static void loeschenVorlage(String id) {
-		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		String rueckgabe = db.getVorlage(id);
+		String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
 		if (rueckgabe == "Eintrag nicht vorhanden") {
 			System.out.println(rueckgabe);
 		}else {
 			File vorlage = new File(rueckgabe);
 			if (vorlage.delete()) {
 				System.out.println(vorlage.getName() + " deleted");
-				db.deleteVorlage(id);
+				DatenbankverbindungVorlage.deleteVorlage(id);
 			}else {
 				System.out.println("failed"); 
 			}
+			/*
+			 * try { Files.deleteIfExists(Paths.get(rueckgabe)); } catch(NoSuchFileException
+			 * e) { System.out.println("No such file/directory exists"); }
+			 * catch(DirectoryNotEmptyException e) {
+			 * System.out.println("Directory is not empty."); } catch(IOException e) {
+			 * System.out.println("Invalid permissions."); }
+			 * 
+			 * System.out.println("Deletion successful.");
+			 */
 		}
 	}
 
+	/*
+	 * Es werden die Platzhalter und die Textbausteine durch richtige Werte ersetzt.
+	 * Dazu wird als erstes der Dateipfad der Vorlage ausgewählt.
+	 * Dann werden die Platzhalter, die momentan noch reiner Text sind, in Content-Control-Felder umgewandelt
+	 * Danach werden die Content-Control-Felder durch die Werte in der angegeben XML-Datei ersetzt
+	 */
 	public static void replacePlaceholder(String id, String xmlfilepath) throws Exception {
 
-		DatenbankverbindungVorlage db = new DatenbankverbindungVorlage();
-		String docxfilepath = db.getVorlage(id);
+		String docxfilepath = DatenbankverbindungVorlage.getVorlage(id);
 		String outputfilepath = docxfilepath.split("[.]")[0] + "_out." + docxfilepath.split("[.]")[1];
 		System.out.println(docxfilepath);
 		System.out.println(outputfilepath);
@@ -154,6 +178,7 @@ public class Hauptprogramm {
 	 * umgewandelt. Diese wird dann in dem Outputpfad abgelegt und der Pfad
 	 * zurückgegeben.
 	 */
+	/*
 	public static String docxtoxml(String inputpath, String filetype) throws Exception {
 		String inputfilepath = inputpath + filetype;
 		String outputfilepath = inputpath + ".xml";
@@ -168,12 +193,13 @@ public class Hauptprogramm {
 		}
 		return outputfilepath;
 	}
-
+*/
 	/*
 	 * Umwandeln der XML-Datei in ein Word-Dokument Als erstes werden wieder die
 	 * Pfade zusammengestellt. Dann wird die XML-Datei geladen und als Word-Dokument
 	 * gespeichert. Dieses wird in dem Outputpfad abgelegt
 	 */
+	/*
 	public static void xmltodocx(String inputpath, String filetype) throws Exception {
 		String inputfilepath = inputpath + filetype;
 		String outputfilepath = inputpath + ".docx";
@@ -187,5 +213,6 @@ public class Hauptprogramm {
 			throw new RuntimeException(exc);
 		}
 	}
+	*/
 
 }

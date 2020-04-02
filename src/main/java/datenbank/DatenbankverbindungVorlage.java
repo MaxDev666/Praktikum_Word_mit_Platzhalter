@@ -50,6 +50,7 @@ public class DatenbankverbindungVorlage {
 	 * Dazu wird nach dem Entitymanager ein query aufgebaut, 
 	 * dass eine Vorlage anhand der als Parameter übergebenen ID auswählt.
 	 * Von dieser Vorlage wird dann der XML-Pfad an den Aufrufer zurückgegeben.
+	 * Wenn der Datenbankeintrag nicht vorhanden ist, wird ein Fehler zurückgegeben.
 	 */
 	public static String getVorlage(String id) {
 		EntityManager em = emf.createEntityManager();
@@ -61,6 +62,7 @@ public class DatenbankverbindungVorlage {
 		String rueckgabe = null;
 		try {
 			vorlage = tq.getSingleResult();
+			System.out.println(vorlage.getVorlagenpfad());
 			rueckgabe = vorlage.getVorlagenpfad();
 		} catch (NoResultException e) {
 			/*StringWriter sw = new StringWriter();
@@ -96,7 +98,7 @@ public class DatenbankverbindungVorlage {
 	}
 	
 	/* Ändern der Vorlage mit übegebener ID durch den übergebenen XMLPfad
-	 * Es wird nach der Vorlage mit der als Parameter übergebenen ID gesucht und bei dieser der XMLPfad ersetzt 
+	 * Es wird nach der Vorlage mit der als Parameter übergebenen ID gesucht und bei dieser der Documentpath ersetzt 
 	 */
 	public static void changeVorlage(String id, String vorlagenpfad) {
 		EntityManager em = emf.createEntityManager();
