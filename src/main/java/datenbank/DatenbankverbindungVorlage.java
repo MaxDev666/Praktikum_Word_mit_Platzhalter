@@ -24,10 +24,11 @@ public class DatenbankverbindungVorlage {
 		die Spalten der Tabelle mit den Parameterwerten ausgefüllt
 		Danach wird die Transaction und somit die Befehle committet. 
 		Beim Fehlerfall werden die Befehle zurück gesetzt*/
-	public static void addVorlage(String id, String vorlagenpfad) {
+	public static String addVorlage(String id, String vorlagenpfad) {
 		
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = null;
+		String rueckgabe = null;
 		try {
 			et = em.getTransaction();
 			et.begin();
@@ -36,14 +37,16 @@ public class DatenbankverbindungVorlage {
 			vorlage.setVorlagenpfad(vorlagenpfad);
 			em.persist(vorlage);
 			et.commit();
+			rueckgabe="Hinzufügen erfolgreich";
 		} catch (Exception e) {
 			if (et != null) {
 				et.rollback();
 			}
-			e.printStackTrace();
+			rueckgabe = "Hinzufügen nicht erfolgreich";
 		} finally {
 			em.close();
 		}
+		return rueckgabe;
 	}
 
 	/* Vorlage anhand übergebener ID aus Tabelle auswählen.
@@ -52,28 +55,17 @@ public class DatenbankverbindungVorlage {
 	 * Von dieser Vorlage wird dann der XML-Pfad an den Aufrufer zurückgegeben.
 	 * Wenn der Datenbankeintrag nicht vorhanden ist, wird ein Fehler zurückgegeben.
 	 */
-	public static String getVorlage(String id) {
+	public static String getVorlage(String id) throws NoResultException{
 		EntityManager em = emf.createEntityManager();
 		String query = "SELECT vorlage FROM Vorlagenschrank vorlage WHERE vorlage.id=:ID";
 
 		TypedQuery<Vorlagenschrank> tq = em.createQuery(query, Vorlagenschrank.class);
 		tq.setParameter("ID", id);
 		Vorlagenschrank vorlage = null;
-		String rueckgabe = null;
-		try {
-			vorlage = tq.getSingleResult();
-			System.out.println(vorlage.getVorlagenpfad());
-			rueckgabe = vorlage.getVorlagenpfad();
-		} catch (NoResultException e) {
-			/*StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			String exAsString = sw.toString();*/
-			rueckgabe = "Eintrag nicht vorhanden"; 
-		} finally {
-			em.close();
-		}
+		vorlage = tq.getSingleResult();
+		String rueckgabe = vorlage.getVorlagenpfad();
+		em.close();
 		return rueckgabe;
-
 	}
 
 	/* Frage, ob benötigt!
@@ -100,10 +92,11 @@ public class DatenbankverbindungVorlage {
 	/* Ändern der Vorlage mit übegebener ID durch den übergebenen XMLPfad
 	 * Es wird nach der Vorlage mit der als Parameter übergebenen ID gesucht und bei dieser der Documentpath ersetzt 
 	 */
-	public static void changeVorlage(String id, String vorlagenpfad) {
+	public static String changeVorlage(String id, String vorlagenpfad) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = null;
 		Vorlagenschrank vorlage = null;
+		String rueckgabe = null;
 		try {
 			et = em.getTransaction();
 			et.begin();
@@ -111,14 +104,16 @@ public class DatenbankverbindungVorlage {
 			vorlage.setVorlagenpfad(vorlagenpfad);
 			em.persist(vorlage);
 			et.commit();
+			rueckgabe = "Ändern erfolgreich";
 		} catch (Exception e) {
 			if (et != null) {
 				et.rollback();
 			}
-			e.printStackTrace();
+			rueckgabe = "Ändern nicht erfolgreich";
 		} finally {
 			em.close();
 		}
+		return rueckgabe;
 	}
 	
 	/* Löschen einer Vorlage

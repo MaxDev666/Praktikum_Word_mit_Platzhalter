@@ -9,9 +9,12 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
+import javax.persistence.NoResultException;
 import javax.xml.bind.JAXBContext;
 
+import org.checkerframework.common.value.qual.StaticallyExecutable;
 import org.docx4j.Docx4J;
+import org.docx4j.model.datastorage.XPathEnhancerParser.equalityExpr_return;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 
 import datenbank.DatenbankverbindungVorlage;
@@ -24,21 +27,25 @@ public class Hauptprogramm {
 		// Zu Testzwecken, zum Kopieren des Testpfads
 		// C:\Users\Maximilian
 		// Hett\Desktop\Studium\ITZBund\Praktikuminternes\Test\Vorlage2_Bescheid_BZST.docx
-
+		
 		// Je nach übergebenen Parametern wird eine entsprechende Methode zur
 		// Verarbeitung der Vorlage ausgeführt
 		switch (args[0]) {
 		case "add":
 			String rueckgabe = hinzufuegenVorlage(args[1]);
+			System.out.println(rueckgabe);
 			break;
 		case "get":
-			ansehenVorlage(args[1]);
+			String rueckgabe1 = ansehenVorlage(args[1]);
+			System.out.println(rueckgabe1);
 			break;
 		case "edit":
-			bearbeitenVorlage(args[1], args[2]);
+			String rueckgabe2 = bearbeitenVorlage(args[1], args[2]);
+			System.out.println(rueckgabe2);
 			break;
 		case "delete":
-			loeschenVorlage(args[1]);
+			String rueckgabe3 = loeschenVorlage(args[1]);
+			System.out.println(rueckgabe3);
 			break;
 		case "replace":
 			replacePlaceholder(args[1], args[2]);
@@ -54,18 +61,21 @@ public class Hauptprogramm {
 	 * Anhand des Dateipfads wird der Dateiname ermittelt, der als ID verwendet wird.
 	 * Anschließend werden der Dateipfad sowie die neue ID in der Vorlagen-Tabelle gespeichert.
 	 */
-	public static String hinzufuegenVorlage(String documentpath) throws Exception {
+	public static String hinzufuegenVorlage(String documentpath) {
 		String[] splitpath = documentpath.split(Pattern.quote("\\"));
 		String id = splitpath[splitpath.length-1];
 		id = id.split("[.]")[0];
-		String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
-		if (rueckgabe == "Eintrag nicht vorhanden") {
-			DatenbankverbindungVorlage.addVorlage(id, documentpath);
-			rueckgabe = "";
-		}else {
-			rueckgabe = "Eintrag vorhanden; bitte bearbeiten, nicht hinzufügen";
+		String rueckgabe = null;
+		if (rueckgabe != "") {
+			rueckgabe = ansehenVorlage(id);
 		}
-		return rueckgabe;
+		String erfolgreich = null;
+		if (rueckgabe == "Eintrag nicht vorhanden") {
+			erfolgreich = DatenbankverbindungVorlage.addVorlage(id, documentpath);
+		}else {
+			erfolgreich = "Eintrag bereits vorhanden, bitte ändern und nicht hinzufügen";
+		}
+		return erfolgreich;
 	}
 
 	/*
@@ -73,14 +83,14 @@ public class Hauptprogramm {
 	 * Dazu wird mithilfe der ID die Datenbank gelesen und der Pfad der Word-Datei zurückgegeben.
 	 * Wenn kein Eintrag gefunden wird, wird ein Fehler zurückgegeben
 	 */
-	public static String ansehenVorlage(String id) throws Exception {
-		String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
-		System.out.println(rueckgabe);
+	public static String ansehenVorlage(String id) {
+		String rueckgabe = null;
+		try {
+			rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
+		} catch (NoResultException e) {
+			rueckgabe="Eintrag nicht vorhanden";
+ 		}
 		return rueckgabe;
-		/*
-		 * String filepath = fullfilepath.split("[.]")[0]; String filetype = "." +
-		 * fullfilepath.split("[.]")[1]; xmltodocx(filepath, filetype);
-		 */
 	}
 
 	/*
@@ -94,17 +104,19 @@ public class Hauptprogramm {
 	 * Wenn ein Dateipfad angegeben ist, wird nach dem Datenbankeintrag gesucht und 
 	 * bei dem gefundenen Eintrag der Dateipfad geändert
 	 */
-	public static void bearbeitenVorlage(String id, String newPath) throws Exception {
+	public static String bearbeitenVorlage(String id, String newPath) {
+		String rueckgabe = null;
 		if (newPath.trim().equals("")) {
-			ansehenVorlage(id);
+			rueckgabe = "Der Dateipad zur Vorlage lautet "+ansehenVorlage(id);
 		} else {
-			String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
-			if (rueckgabe == "Eintrag nicht vorhanden") {
-				System.out.println(rueckgabe);
+			String err = ansehenVorlage(id);
+			if (err == "Eintrag nicht vorhanden") {
+				rueckgabe = "Eintrag zum Ändern nicht vorhanden, bitte prüfen und eventuell hinzufügen";
 			}else {
-				DatenbankverbindungVorlage.changeVorlage(id, newPath);
+				rueckgabe = DatenbankverbindungVorlage.changeVorlage(id, newPath);
 			}
 		}
+		return rueckgabe;
 	}
 
 	/*
@@ -112,28 +124,19 @@ public class Hauptprogramm {
 	 * Dazu wird erst geprüft, ob der Eintrag vorhanden ist.
 	 * Wenn dies der Fall ist, wird die Word-Datei und danach der Datenbankeintrag gelöscht 
 	 */
-	public static void loeschenVorlage(String id) {
-		String rueckgabe = DatenbankverbindungVorlage.getVorlage(id);
-		if (rueckgabe == "Eintrag nicht vorhanden") {
-			System.out.println(rueckgabe);
-		}else {
+	public static String loeschenVorlage(String id) {
+
+		String rueckgabe = ansehenVorlage(id);
+		if (rueckgabe != "Eintrag nicht vorhanden") {
 			File vorlage = new File(rueckgabe);
 			if (vorlage.delete()) {
-				System.out.println(vorlage.getName() + " deleted");
+				rueckgabe = vorlage.getName() + " auf dem Dateisystem und in DB gelöscht";
 				DatenbankverbindungVorlage.deleteVorlage(id);
 			}else {
-				System.out.println("failed"); 
+				rueckgabe = "Datei auf dem Dateisystem konnte nicht gelöscht werden"; 
 			}
-			/*
-			 * try { Files.deleteIfExists(Paths.get(rueckgabe)); } catch(NoSuchFileException
-			 * e) { System.out.println("No such file/directory exists"); }
-			 * catch(DirectoryNotEmptyException e) {
-			 * System.out.println("Directory is not empty."); } catch(IOException e) {
-			 * System.out.println("Invalid permissions."); }
-			 * 
-			 * System.out.println("Deletion successful.");
-			 */
 		}
+		return rueckgabe;
 	}
 
 	/*
@@ -143,7 +146,7 @@ public class Hauptprogramm {
 	 * Danach werden die Content-Control-Felder durch die Werte in der angegeben XML-Datei ersetzt
 	 */
 	public static void replacePlaceholder(String id, String xmlfilepath) throws Exception {
-
+		
 		String docxfilepath = DatenbankverbindungVorlage.getVorlage(id);
 		String outputfilepath = docxfilepath.split("[.]")[0] + "_out." + docxfilepath.split("[.]")[1];
 		System.out.println(docxfilepath);
