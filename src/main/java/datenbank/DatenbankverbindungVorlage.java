@@ -1,9 +1,8 @@
 package datenbank;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
+import javax.management.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -11,15 +10,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import junit.framework.Test;
-
 public class DatenbankverbindungVorlage {
 	//es wird eine EntityManagerFactory erstellt, mit der die einzelnen Entitymanager erzeugt werden
 	private static EntityManagerFactory emf = Persistence
 			.createEntityManagerFactory("WordPlatzhalter");
 
 	/*	Methode dient dem Hinzufügen einer Vorlage in die Datenbank, 
-	 * dazu wird als erstes ein Entitymanager und eine Transaction erstellt
+	 *  dazu wird als erstes ein Entitymanager und eine Transaction erstellt
 		Diese Transaction wird gestartet, eine neue Vorlage instanziert und 
 		die Spalten der Tabelle mit den Parameterwerten ausgefüllt
 		Danach wird die Transaction und somit die Befehle committet. 
@@ -37,12 +34,12 @@ public class DatenbankverbindungVorlage {
 			vorlage.setVorlagenpfad(vorlagenpfad);
 			em.persist(vorlage);
 			et.commit();
-			rueckgabe="Hinzufügen erfolgreich";
+			rueckgabe="Hinzufügen erfolgreich "+vorlage.getVorlagenpfad();
 		} catch (Exception e) {
 			if (et != null) {
 				et.rollback();
 			}
-			rueckgabe = "Hinzufügen nicht erfolgreich";
+			rueckgabe = "Hinzufügen nicht erfolgreich.";
 		} finally {
 			em.close();
 		}
@@ -73,20 +70,21 @@ public class DatenbankverbindungVorlage {
 	 * Es werden alle Vorlagen durch ein Query ausgewählt und in einer Arrayliste gespeichert.
 	 * Von jeder Vorlage wird der Pfad zurückgegeben
 	 */
-	public static void getVorlagen() {
+	public static List<Vorlagenschrank> getVorlagen() {
 		EntityManager em = emf.createEntityManager();
 		String strQuery = "SELECT vorlage FROM Vorlagenschrank vorlage WHERE vorlage.id IS NOT NULL";
 		TypedQuery<Vorlagenschrank> tq = em.createQuery(strQuery, Vorlagenschrank.class);
-		List<Vorlagenschrank> vorlagen;
+		List<Vorlagenschrank> vorlagen = null;
 		try {
 			vorlagen = tq.getResultList();
-			vorlagen.forEach(vorlage -> System.out.println(vorlage.getVorlagenpfad()));
-
+			//vorlagen.forEach(vorlage -> System.out.println(vorlage.getVorlagenpfad()));
+			
 		} catch (NoResultException e) {
 			e.printStackTrace();
 		} finally {
 			em.close();
 		}
+		return vorlagen;
 	}
 	
 	/* Ändern der Vorlage mit übegebener ID durch den übergebenen XMLPfad
@@ -104,12 +102,12 @@ public class DatenbankverbindungVorlage {
 			vorlage.setVorlagenpfad(vorlagenpfad);
 			em.persist(vorlage);
 			et.commit();
-			rueckgabe = "Ändern erfolgreich";
+			rueckgabe = "Ändern erfolgreich.";
 		} catch (Exception e) {
 			if (et != null) {
 				et.rollback();
 			}
-			rueckgabe = "Ändern nicht erfolgreich";
+			rueckgabe = "Ändern nicht erfolgreich.";
 		} finally {
 			em.close();
 		}
@@ -141,5 +139,25 @@ public class DatenbankverbindungVorlage {
 		} finally {
 			em.close();
 		}
+	}
+	
+	public static void deleteVorlagen() {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = null;
+		javax.persistence.Query q = em.createQuery("DELETE FROM Vorlagenschrank");
+		try {
+			et = em.getTransaction();
+			et.begin();
+			q.executeUpdate();
+			et.commit();
+		} catch (Exception e) {
+			if (et != null) {
+				et.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+
 	}
 }
