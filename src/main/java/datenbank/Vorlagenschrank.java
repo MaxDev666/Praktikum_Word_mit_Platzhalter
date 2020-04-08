@@ -1,7 +1,5 @@
 package datenbank;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,8 +8,7 @@ import javax.persistence.Table;
 //Entität der Vorlagenschrank-DB zur Darstellung n Hibernate
 @Entity
 @Table(name = "vorlagenschrank")
-public class Vorlagenschrank implements Serializable{
-	private static final long serialVersionUID = 1L;
+public class Vorlagenschrank{
 
 	//id ist der Primärschlüssel
 	@Id
@@ -19,9 +16,14 @@ public class Vorlagenschrank implements Serializable{
 	private String id;
 	
 	//der vorlagenpfad darf nicht leer sein
-	@Column(nullable = false)
+	@Column(name="vorlagenpfad", nullable = false)
 	private String vorlagenpfad;
 	
+	public Vorlagenschrank(String id, String documentpath) {
+		this.id=id;
+		this.vorlagenpfad=documentpath;
+	}
+
 	//Getter und Setter für id und Vorlagenpfad
 	public String getVorlagenpfad() {
 		return vorlagenpfad;
