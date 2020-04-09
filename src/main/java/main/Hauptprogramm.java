@@ -1,18 +1,55 @@
 package main;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import datenbank.VorlagenschrankRepository;
+import main.service.VorlageService;
 
 @SpringBootApplication
 public class Hauptprogramm{
 
+	@Autowired
+	VorlageService vorlageService;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(Hauptprogramm.class, args);
 	}
+
+	public void run(String... args) throws Exception {
+		// Je nach übergebenen Parametern wird eine entsprechende Methode zur
+		// Verarbeitung der Vorlage ausgeführt
+		switch (args[0]) {
+		case "add":
+			String rueckgabeAusHinzufuegen = vorlageService.hinzufuegenVorlage(args[1]);
+			System.out.println(rueckgabeAusHinzufuegen);
+			break;
+		case "get":
+			String rueckgabeAusAnsehen = vorlageService.ansehenVorlage(args[1]);
+			System.out.println(rueckgabeAusAnsehen);
+			break;
+		case "edit":
+			String rueckgabeAusBearbeiten = vorlageService.bearbeitenVorlage(args[1], args[2]);
+			System.out.println(rueckgabeAusBearbeiten);
+			break;
+		case "delete":
+			String rueckgabeAusLoeschen = vorlageService.loeschenVorlage(args[1]);
+			System.out.println(rueckgabeAusLoeschen);
+			break;
+		case "replace":
+			String rueckgabeAusReplace = vorlageService.replacePlaceholder(args[1], args[2]);
+			System.out.println(rueckgabeAusReplace);
+			break;
+		default:
+			String noOption = "Es wurde keine Option ausgewählt";
+			System.out.println(noOption);
+		}
+
+	}
+	
+}
+	
+	
 
 	// Zu Testzwecken, zum Kopieren des Testpfads
 	// C:\Users\Maximilian
@@ -165,7 +202,6 @@ public class Hauptprogramm{
 				  e.toString(); 
 	  } 
 	  return fehler; */
-}
 
 	/*
 	 * Umwandeln des Word-Dokuments in eine XML-Datei Als erstes werden der
@@ -203,5 +239,3 @@ public class Hauptprogramm{
 	 * System.out.println("Saved: " + outputfilepath); } catch (Exception exc) {
 	 * exc.printStackTrace(); throw new RuntimeException(exc); } }
 	 */
-
-}

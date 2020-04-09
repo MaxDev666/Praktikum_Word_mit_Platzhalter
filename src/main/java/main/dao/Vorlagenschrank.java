@@ -1,4 +1,4 @@
-package datenbank;
+package main.dao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

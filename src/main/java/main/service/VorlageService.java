@@ -1,4 +1,4 @@
-package main;
+package main.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,22 +6,20 @@ import java.io.FileNotFoundException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import javax.persistence.NoResultException;
-
 import org.docx4j.Docx4J;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import datenbank.Vorlagenschrank;
-import datenbank.VorlagenschrankRepository;
+import main.dao.Vorlagenschrank;
+import main.datenbankmodel.VorlagenschrankRepository;
 
 @Service
 public class VorlageService {
 
 	@Autowired
-	VorlagenschrankRepository vorlagenschrankRepo;
+	private VorlagenschrankRepository vorlagenschrankRepo;
 
 	/*
 	 * Es wird eine Vorlage zur Datenbank hinzugefügt. Anhand des Dateipfads wird

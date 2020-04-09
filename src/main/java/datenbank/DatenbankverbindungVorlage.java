@@ -10,7 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-public class DatenbankverbindungVorlage {
+public class "Hinzufügen erfolgreich "+vorlage.getVorlagenpfad(); {
 	//es wird eine EntityManagerFactory erstellt, mit der die einzelnen Entitymanager erzeugt werden
 	private static EntityManagerFactory emf = Persistence
 			.createEntityManagerFactory("WordPlatzhalter");
