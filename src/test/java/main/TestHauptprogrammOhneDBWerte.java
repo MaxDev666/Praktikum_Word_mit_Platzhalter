@@ -1,7 +1,7 @@
 package main;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,19 +10,29 @@ import java.nio.file.Files;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import datenbank.DatenbankverbindungVorlage;
+import main.dao.VorlagenschrankRepository;
+import main.service.VorlageService;
 
-class TestHauptprogrammOhneDBWerte {
-
+@RunWith(SpringRunner.class)
+public class TestHauptprogrammOhneDBWerte {
+	
+	
 	static String vorlagenpfad = "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage5_Bescheid_BZST.docx";
 	static String old_path = "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage1_Bescheid_BZST.docx";
 	static File newfile = new File(vorlagenpfad);
 	static File oldfile = new File(old_path);
 	
+	@Autowired
+	private static VorlagenschrankRepository vorlagenschrankRepo;
+	private VorlageService vorlagenService;
+	
 	@BeforeAll
 	public static void setup() {
-		DatenbankverbindungVorlage.deleteVorlagen();
+		vorlagenschrankRepo.deleteAll();
 		try {
 			Files.copy(oldfile.toPath(),newfile.toPath());
 		} catch (IOException e) {
@@ -32,7 +42,7 @@ class TestHauptprogrammOhneDBWerte {
 
 	@Test
 	public void addVorlageToDBFirstTime() {
-		String rueckgabe = Hauptprogramm.hinzufuegenVorlage(
+		String rueckgabe = vorlagenService.hinzufuegenVorlage(
 				"C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage5_Bescheid_BZST.docx");
 		String expected = "Hinzufügen erfolgreich C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage5_Bescheid_BZST.docx";
 		assertNotNull(rueckgabe);
@@ -41,7 +51,7 @@ class TestHauptprogrammOhneDBWerte {
 
 	@Test
 	public void addVorlageToDBNotExistingFile() {
-		String rueckgabe = Hauptprogramm.hinzufuegenVorlage(
+		String rueckgabe = vorlagenService.hinzufuegenVorlage(
 				"C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage5_Bescheid_BZST_new.docx");
 		String expected = "Datei wurde nicht gefunden.";
 		assertNotNull(rueckgabe);
@@ -50,7 +60,7 @@ class TestHauptprogrammOhneDBWerte {
 
 	@AfterAll
 	public static void deleteEntries() {
-		DatenbankverbindungVorlage.deleteVorlagen();
+		vorlagenschrankRepo.deleteAll();
 		newfile.delete();
 	}
 

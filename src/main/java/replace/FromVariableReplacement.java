@@ -7,6 +7,7 @@ import org.docx4j.TraversalUtil;
 import org.docx4j.TraversalUtil.CallbackImpl;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
+import org.docx4j.model.datastorage.migration.AbstractMigratorUsingAnswersFormat;
 import org.docx4j.model.datastorage.migration.VariablePrepare;
 import org.docx4j.openpackaging.io.SaveToZipFile;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author jharrop
  * @since 3.0.0
  */
-public class FromVariableReplacement extends AbstractMigratorUsingSimpleTextFormat {
+public class FromVariableReplacement extends AbstractMigratorUsingAnswersFormat {
 	
 	private static Logger log = LoggerFactory.getLogger(FromVariableReplacement.class);
 		

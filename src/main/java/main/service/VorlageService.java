@@ -12,14 +12,19 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.dao.Vorlagenschrank;
-import main.datenbankmodel.VorlagenschrankRepository;
+import main.dao.TextbausteinRepository;
+import main.dao.VorlagenschrankRepository;
+import main.datenbankmodel.Textbaustein;
+import main.datenbankmodel.Vorlagenschrank;
 
 @Service
 public class VorlageService {
 
 	@Autowired
 	private VorlagenschrankRepository vorlagenschrankRepo;
+	
+	@Autowired
+	private TextbausteinRepository textbausteinRepo;
 
 	/*
 	 * Es wird eine Vorlage zur Datenbank hinzugefügt. Anhand des Dateipfads wird
@@ -86,6 +91,7 @@ public class VorlageService {
 				if (vorlage.isPresent()) {
 					Vorlagenschrank newVorlage = vorlage.get();
 					newVorlage.setVorlagenpfad(newPath);
+					vorlagenschrankRepo.save(newVorlage);
 					rueckgabeAnMainMethode = "Ändern auf " + newPath + " erfolgreich.";
 				} else {
 					rueckgabeAnMainMethode = "Eintrag zum Ändern nicht vorhanden, bitte prüfen und eventuell hinzufügen.";
@@ -119,6 +125,84 @@ public class VorlageService {
 		}
 		return rueckgabeAnMainMethode;
 	}
+	
+	
+	/*
+	 * Es wird eine Vorlage zur Datenbank hinzugefügt. Anhand des Dateipfads wird
+	 * der Dateiname ermittelt, der als ID verwendet wird. Anschließend werden der
+	 * Dateipfad sowie die neue ID in der Vorlagen-Tabelle gespeichert.
+	 */
+	public String hinzufuegenTextbaustein(String id, String text) {
+		String hinzufügenEintragErfolgreich = null;
+			// ID aus dem Dateinamen bilden
+			String entryFound = ansehenTextbaustein(id);
+			if (entryFound == "Eintrag nicht vorhanden.") {
+				textbausteinRepo.save(new Textbaustein(id, text));
+				hinzufügenEintragErfolgreich = "Hinzufügen erfolgreich";
+			}else {
+				hinzufügenEintragErfolgreich = "Eintrag bereits vorhanden, bitte ändern und nicht hinzufügen.";
+			}
+		return hinzufügenEintragErfolgreich;
+	}
+
+	/*
+	 * Es wird eine Vorlage angezeigt. Dazu wird mithilfe der ID die Datenbank
+	 * gelesen und der Pfad der Word-Datei zurückgegeben. Wenn kein Eintrag gefunden
+	 * wird, wird ein Fehler zurückgegeben
+	 */
+	public String ansehenTextbaustein(String id) {
+		Optional<Textbaustein> textbaustein = textbausteinRepo.findById(id);
+
+		if (textbaustein.isPresent()) {
+			return textbaustein.get().getText();
+		} else {
+			return "Eintrag nicht vorhanden.";
+		}
+	}
+
+	/*
+	 * Je nachdem, ob der neue Pfad zur Word-Datei angegeben wurde oder nicht, wird
+	 * die Vorlage nur ausgelesen oder der Dateipfad in der Datenbank angepasst.
+	 * 
+	 * Wenn kein neuer Pfad angegebe wurde, gehe ich davon aus, dass der User nicht
+	 * weiß, wo die zu ändernde Vorlage liegt. Deshalb wird dabei nur nach einer
+	 * Vorlage mit der angegebenen ID gesucht.
+	 * 
+	 * Wenn ein Dateipfad angegeben ist, wird nach dem Datenbankeintrag gesucht und
+	 * bei dem gefundenen Eintrag der Dateipfad geändert
+	 */
+	public String bearbeitenTextbaustein(String id, String newText) {
+		String rueckgabeAnMainMethode = null;
+				Optional<Textbaustein> textbaustein = textbausteinRepo.findById(id);
+				if (textbaustein.isPresent()) {
+					Textbaustein newTextbaustein = textbaustein.get();
+					newTextbaustein.setText(newText);
+					textbausteinRepo.save(newTextbaustein);
+					rueckgabeAnMainMethode = "Ändern erfolgreich.";
+				} else {
+					rueckgabeAnMainMethode = "Eintrag zum Ändern nicht vorhanden, bitte prüfen und eventuell hinzufügen.";
+				}
+		return rueckgabeAnMainMethode;
+	}
+
+	/*
+	 * Es wird eine Vorlage, also der Datenbankeintrag und die Datei gelöscht. Dazu
+	 * wird erst geprüft, ob der Eintrag vorhanden ist. Wenn dies der Fall ist, wird
+	 * die Word-Datei und danach der Datenbankeintrag gelöscht
+	 */
+	public String loeschenTextbauStein(String id) {
+		String textbaustein = null;
+		String rueckgabeAnMainMethode = null;
+		textbaustein = ansehenTextbaustein(id);
+		if (textbaustein != "Eintrag nicht vorhanden.") {
+				textbausteinRepo.deleteById(id);
+				rueckgabeAnMainMethode = "Eintrag gelöscht";
+		}else {
+			rueckgabeAnMainMethode = textbaustein;
+		}
+		return rueckgabeAnMainMethode;
+	}
+	
 	
 	/*
 	 * Es werden die Platzhalter und die Textbausteine durch richtige Werte ersetzt.

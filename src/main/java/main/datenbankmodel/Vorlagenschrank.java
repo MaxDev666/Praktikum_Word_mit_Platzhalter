@@ -1,15 +1,18 @@
-package main.dao;
+package main.datenbankmodel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//Entität der Vorlagenschrank-DB zur Darstellung n Hibernate
+//Entität der Vorlagenschrank-DB zur Darstellung in Hibernate
 @Entity
 @Table(name = "vorlagenschrank")
 public class Vorlagenschrank{
 
+	public Vorlagenschrank() {
+		
+	}
 	//id ist der Primärschlüssel
 	@Id
 	@Column(name = "id", unique = true)
