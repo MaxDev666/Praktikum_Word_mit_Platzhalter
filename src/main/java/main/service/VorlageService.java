@@ -27,9 +27,9 @@ public class VorlageService {
 	private TextbausteinRepository textbausteinRepo;
 
 	/*
-	 * Es wird eine Vorlage zur Datenbank hinzugefügt. Anhand des Dateipfads wird
-	 * der Dateiname ermittelt, der als ID verwendet wird. Anschließend werden der
-	 * Dateipfad sowie die neue ID in der Vorlagen-Tabelle gespeichert.
+	 * Es wird eine Vorlage zur Datenbank hinzugefügt. Als erstes wird geprüft, ob die Datei vorhanden ist.
+	 * Anhand des Dateipfads wird der Dateiname ermittelt, der als ID verwendet wird. 
+	 * Anschließend werden der Dateipfad sowie die neue ID in der Vorlagen-Tabelle gespeichert.
 	 */
 	public String hinzufuegenVorlage(String documentpath) {
 		String hinzufügenEintragErfolgreich = null;
@@ -39,6 +39,7 @@ public class VorlageService {
 			String[] splitpath = documentpath.split(Pattern.quote("\\"));
 			String id = splitpath[splitpath.length - 1];
 			id = id.split("[.]")[0];
+			// Prüfen, ob Eintrag schon vorhanden ist
 			String entryFound = ansehenVorlage(id);
 			if (entryFound == "Eintrag nicht vorhanden.") {
 				vorlagenschrankRepo.save(new Vorlagenschrank(id, documentpath));
@@ -76,8 +77,9 @@ public class VorlageService {
 	 * weiß, wo die zu ändernde Vorlage liegt. Deshalb wird dabei nur nach einer
 	 * Vorlage mit der angegebenen ID gesucht.
 	 * 
-	 * Wenn ein Dateipfad angegeben ist, wird nach dem Datenbankeintrag gesucht und
-	 * bei dem gefundenen Eintrag der Dateipfad geändert
+	 * Wenn ein Dateipfad angegeben ist, wird geprüft, ob es die Datei mit dem neuen Dateipfad gibt. 
+	 * Anschließend wird nach dem Datenbankeintrag gesucht und bei dem gefundenen Eintrag der Dateipfad geändert
+	 * Wenn der Eintrag nicht gefunden wurde, gibt es einen Fehler
 	 */
 	public String bearbeitenVorlage(String id, String newPath) {
 		String rueckgabeAnMainMethode = null;
@@ -128,13 +130,12 @@ public class VorlageService {
 	
 	
 	/*
-	 * Es wird eine Vorlage zur Datenbank hinzugefügt. Anhand des Dateipfads wird
-	 * der Dateiname ermittelt, der als ID verwendet wird. Anschließend werden der
-	 * Dateipfad sowie die neue ID in der Vorlagen-Tabelle gespeichert.
+	 * Es wird ein Textbaustein zur Datenbank hinzugefügt. Dazu wird erst geprüft, ob der Eintrag bereits vorhanden ist.
+	 * Anschließend wird die übergebene ID und der übergebene Text in der Textbaustein-Tabelle gespeichert.
 	 */
 	public String hinzufuegenTextbaustein(String id, String text) {
 		String hinzufügenEintragErfolgreich = null;
-			// ID aus dem Dateinamen bilden
+			// Prüfen, ob Eintrag bereits vorhanden
 			String entryFound = ansehenTextbaustein(id);
 			if (entryFound == "Eintrag nicht vorhanden.") {
 				textbausteinRepo.save(new Textbaustein(id, text));
@@ -146,8 +147,8 @@ public class VorlageService {
 	}
 
 	/*
-	 * Es wird eine Vorlage angezeigt. Dazu wird mithilfe der ID die Datenbank
-	 * gelesen und der Pfad der Word-Datei zurückgegeben. Wenn kein Eintrag gefunden
+	 * Es wird der Textbaustein angezeigt. Dazu wird mithilfe der ID die Datenbank
+	 * gelesen und der Text des Textbausteins zurückgegeben. Wenn kein Eintrag gefunden
 	 * wird, wird ein Fehler zurückgegeben
 	 */
 	public String ansehenTextbaustein(String id) {
@@ -161,15 +162,10 @@ public class VorlageService {
 	}
 
 	/*
-	 * Je nachdem, ob der neue Pfad zur Word-Datei angegeben wurde oder nicht, wird
-	 * die Vorlage nur ausgelesen oder der Dateipfad in der Datenbank angepasst.
-	 * 
-	 * Wenn kein neuer Pfad angegebe wurde, gehe ich davon aus, dass der User nicht
-	 * weiß, wo die zu ändernde Vorlage liegt. Deshalb wird dabei nur nach einer
-	 * Vorlage mit der angegebenen ID gesucht.
-	 * 
-	 * Wenn ein Dateipfad angegeben ist, wird nach dem Datenbankeintrag gesucht und
-	 * bei dem gefundenen Eintrag der Dateipfad geändert
+	 * Der Text des Textbausteins wird angepasst. 
+	 * Dazu wird erst geprüft, ob es den EIntrag mit der übergebenen ID gibt.
+	 * Dann wird der Text des Textbausteins mit dem übergebenen Text überschrieben
+	 * Wenn der Eintrag nicht vorhanden ist, gibt es einen Fehler
 	 */
 	public String bearbeitenTextbaustein(String id, String newText) {
 		String rueckgabeAnMainMethode = null;
@@ -186,9 +182,8 @@ public class VorlageService {
 	}
 
 	/*
-	 * Es wird eine Vorlage, also der Datenbankeintrag und die Datei gelöscht. Dazu
-	 * wird erst geprüft, ob der Eintrag vorhanden ist. Wenn dies der Fall ist, wird
-	 * die Word-Datei und danach der Datenbankeintrag gelöscht
+	 * Der Textbaustein wird gelöscht. Dazu wird erst geprüft, ob der Eintrag vorhanden ist. 
+	 * Wenn dies der Fall ist, wird der Textbaustein gelöscht
 	 */
 	public String loeschenTextbauStein(String id) {
 		String textbaustein = null;
@@ -208,8 +203,10 @@ public class VorlageService {
 	 * Es werden die Platzhalter und die Textbausteine durch richtige Werte ersetzt.
 	 * Dazu wird als erstes der Dateipfad der Vorlage ausgewählt. Dann werden die
 	 * Platzhalter, die momentan noch reiner Text sind, in Content-Control-Felder
-	 * umgewandelt Danach werden die Content-Control-Felder durch die Werte in der
-	 * angegeben XML-Datei ersetzt
+	 * umgewandelt. Dann sollen als erstes die die Textbausteine ersetzt werden. 
+	 * Dazu soll wie im Hauptprogramm, Auswahl "test" verfahren werden. 
+	 * Danach werden die restlichen Content-Control-Felder durch die Daten, also die Werte in der
+	 * übergebenen XML-Datei ersetzt
 	 */
 	public String replacePlaceholder(String id, String xmlfilepath) {
 		String fehler = null; 
@@ -217,13 +214,13 @@ public class VorlageService {
 		FileInputStream xmlStream = null; 
 		
 		String docxfilepath = ansehenVorlage(id);
-		File xmlFile = new File(xmlfilepath);
 		if (docxfilepath == "Eintrag nicht vorhanden.") { 
 			fehler = docxfilepath;
 			return fehler; 
 		} 
 		String outputfilepath = docxfilepath.split("[.]")[0] + "_out." + docxfilepath.split("[.]")[1];
 	  
+		File xmlFile = new File(xmlfilepath);
 		if (!xmlFile.exists()) { 
 			fehler = "XML-Datei nicht vorhanden."; 
 			return fehler; 

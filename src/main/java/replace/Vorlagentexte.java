@@ -11,7 +11,12 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.docx4j.fonts.substitutions.FontSubstitutions.Replace;
-
+/*
+ * Diese Klasse soll dazu dienen, 
+ * beim Umwanden von normalen Text in Content-Control-Felder keine "answer"-Tags zu erstellen, sondern "text"-Tags.
+ * Kopiert von "Answers"
+ * Noch nicht produktiv, da es einen Fehler gibt; siehe Doku
+ */
 /**
  * <p>Java class for anonymous complex type.
  * 

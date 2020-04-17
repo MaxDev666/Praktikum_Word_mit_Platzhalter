@@ -13,6 +13,15 @@ import org.docx4j.wml.RPr;
 import org.opendope.xpaths.Xpaths;
 import org.opendope.xpaths.Xpaths.Xpath.DataBinding;
 
+/*
+ * Diese Klasse soll dazu dienen, 
+ * beim Umwanden von normalen Text in Content-Control-Felder keine "answer"-Tags zu erstellen, sondern "text"-Tags.
+ * Kopiert von "AbstractMigratorUsingAnswersFormat"
+ * In dieser Klasse werden die XML-Parts für die Content-Control-Felder erstellt 
+ * und mit SimpleTextPart eine CustomXML mit "text"-Tags aufgebaut
+ * Noch nicht produktiv, da es einen Fehler gibt; siehe Doku
+ */
+
 public class AbstractMigratorUsingSimpleTextFormat extends AbstractMigrator{
 
 	protected SimpleTextPart simpleTextPart;

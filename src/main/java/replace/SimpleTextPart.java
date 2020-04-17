@@ -7,6 +7,11 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.opendope.JaxbCustomXmlDataStoragePart;
 
+/* Diese Klasse soll dazu dienen, 
+ * beim Umwanden von normalen Text in Content-Control-Felder keine "answer"-Tags zu erstellen, sondern "text"-Tags.
+ * Diese Klasse wurde von StandardisedAnswersPart kopiert und angepasst
+ * Ist noch nicht produktiv, da es einen Fehelr gibt; siehe Doku
+ */
 public class SimpleTextPart extends JaxbCustomXmlDataStoragePart<Vorlagentexte>{
 
 	public SimpleTextPart(PartName partName) throws InvalidFormatException {

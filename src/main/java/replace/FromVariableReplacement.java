@@ -16,7 +16,10 @@ import org.docx4j.wml.R;
 import org.docx4j.wml.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/*
+ * Diese Klasse ersetzt die normalen Textvariablen durch Content-Control-Felder, 
+ * damit die Variablen zusammenhängend durch die Daten ersetzt werden können"
+ */
 /**
  * This class will help you to migrate
  * from a string replacement approach,
@@ -43,13 +46,27 @@ import org.slf4j.LoggerFactory;
  *  headers/footers, footnotes/endnotes,
  *  or comments)
  * 
- * @author jharrop
- * @since 3.0.0
  */
 public class FromVariableReplacement extends AbstractMigratorUsingAnswersFormat {
 	
 	private static Logger log = LoggerFactory.getLogger(FromVariableReplacement.class);
 		
+	/**
+	 * @param args
+	 * @throws Exception 
+	 */
+	public static void main(String docxfilepath, String outputfilepath) throws Exception {
+
+		WordprocessingMLPackage pkgIn = WordprocessingMLPackage.load(new java.io.File(docxfilepath));
+		
+		FromVariableReplacement migrator = new FromVariableReplacement();
+		WordprocessingMLPackage pkgOut = migrator.migrate(pkgIn);
+		
+		SaveToZipFile saver = new SaveToZipFile(pkgOut);
+		saver.save(outputfilepath);
+		
+	}
+	
 	public WordprocessingMLPackage migrate(WordprocessingMLPackage pkgIn) throws Exception {
 		
 		// TODO - test that OpenDoPE parts aren't already present
@@ -185,23 +202,5 @@ public class FromVariableReplacement extends AbstractMigratorUsingAnswersFormat 
               return null;
           }
 	  }
-
-	
-
-	/**
-	 * @param args
-	 * @throws Exception 
-	 */
-	public static void main(String docxfilepath, String outputfilepath) throws Exception {
-
-		WordprocessingMLPackage pkgIn = WordprocessingMLPackage.load(new java.io.File(docxfilepath));
-		
-		FromVariableReplacement migrator = new FromVariableReplacement();
-		WordprocessingMLPackage pkgOut = migrator.migrate(pkgIn);
-		
-		SaveToZipFile saver = new SaveToZipFile(pkgOut);
-		saver.save(outputfilepath);
-		
-	}
 
 }

@@ -17,7 +17,13 @@ import org.docx4j.wml.SdtPr;
 
 import main.Hauptprogramm;
 
-
+/* 
+ * Diese Klasse dient dem Testen des Textbaustein-Ersetzens. 
+ * Dabei werden erst durch getXpaths nacheinander zwei Klassen aufgerufen, 
+ * die die XPath-Pfade und die IDs der Textbaustein-Elemente herausfinden und in Arraylisten speichern
+ * Dann wird durch das HAuptprogramm die addTextbausteine-Methode aufgerufen, 
+ * die das Ersetzen der Textbausteine durchführt   
+ */
 public class ReplaceTextbaustein {
 
 	public static void getXpaths(String inputfilepath, WordprocessingMLPackage wordMLPackage) throws Docx4JException {

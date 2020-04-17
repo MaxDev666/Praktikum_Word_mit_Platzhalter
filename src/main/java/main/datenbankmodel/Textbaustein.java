@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//Entität der Textbaustein-DB zur Darstellung in Hibernate
+//Entität der Textbaustein-DB zur Darstellung in Hibernate mit dem Spring-Framework
 @Entity
 @Table(name = "textbaustein")
 public class Textbaustein{

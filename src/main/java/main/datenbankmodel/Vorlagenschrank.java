@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//Entität der Vorlagenschrank-DB zur Darstellung in Hibernate
+//Entität der Vorlagenschrank-DB zur Darstellung in Hibernate mit dem Spring-Framework
 @Entity
 @Table(name = "vorlagenschrank")
 public class Vorlagenschrank{

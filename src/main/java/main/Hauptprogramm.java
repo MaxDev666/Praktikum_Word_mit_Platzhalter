@@ -76,6 +76,10 @@ public class Hauptprogramm implements CommandLineRunner{
 			System.out.println(rueckgabeAusReplace);
 			break;
 		case "test":
+			/*Diese Auswahl dient momentan dem Test des Textbaustein-Ersetzens. 
+			Dabei wird erst der XPath-Pfad des XML-Elements und daraus die ID herausgefunden.
+			Anschlieﬂend wird mit der ID die Datenbank gelesen, um den Text des Textbausteins herauszufinden
+			Dann wird der Wert des Elements durch den Text ausgetauscht*/
 			String filepath = "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage1_Bescheid_BZST_out.docx";
 			WordprocessingMLPackage wordMLPackage  = WordprocessingMLPackage.load(new java.io.File(filepath));
 			Boolean error = false;
@@ -95,11 +99,14 @@ public class Hauptprogramm implements CommandLineRunner{
 				if (texte.get(i)!="Eintrag nicht vorhanden.") {
 					//ReplaceTextbaustein.addTextbausteine(texte, xPathList, filepath, wordMLPackage);
 					System.out.println("Textbaustein ersetzt");
+				}else {
+					System.out.println((i+1)+". Text nicht vorhanden");
 				}
 			}
 
 			break;
 		default:
+			//Fehler, wenn keine passende Option gew‰hlt wurde.
 			String noOption = "Es wurde keine Option ausgew‰hlt";
 			System.out.println(noOption);
 		}

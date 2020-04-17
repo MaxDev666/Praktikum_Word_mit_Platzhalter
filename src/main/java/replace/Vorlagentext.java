@@ -7,6 +7,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
+/*
+ * Diese Klasse soll dazu dienen, 
+ * beim Umwanden von normalen Text in Content-Control-Felder keine "answer"-Tags zu erstellen, sondern "text"-Tags.
+ * Kopiert von "Answer".
+ * Noch nicht produktiv, da es einen Fehler gibt; siehe Doku
+ */
 /**
  * <p>Java class for anonymous complex type.
  * 

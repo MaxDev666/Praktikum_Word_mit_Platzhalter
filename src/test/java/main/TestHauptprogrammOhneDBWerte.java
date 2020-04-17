@@ -12,14 +12,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import main.dao.VorlagenschrankRepository;
 import main.service.VorlageService;
 
 @RunWith(SpringRunner.class)
+@DataJpaTest
 public class TestHauptprogrammOhneDBWerte {
 	
+	/*
+	 * Test des Hinzufügens einer Vorlage: 
+	 * Test 1: Es wird getestet, ob der Dateipfad einer Datei korrekt in der Db hinzugefügt wurde 
+	 * Test 2: Es wird getestet, ob das Programm die fehlende Datei auf dem Dateisystem erkennt
+	 */
 	
 	static String vorlagenpfad = "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage5_Bescheid_BZST.docx";
 	static String old_path = "C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage1_Bescheid_BZST.docx";
@@ -28,7 +35,9 @@ public class TestHauptprogrammOhneDBWerte {
 	
 	@Autowired
 	private static VorlagenschrankRepository vorlagenschrankRepo;
-	private VorlageService vorlagenService;
+	
+	@Autowired
+	private VorlageService vorlagenService; 
 	
 	@BeforeAll
 	public static void setup() {
@@ -47,6 +56,7 @@ public class TestHauptprogrammOhneDBWerte {
 		String expected = "Hinzufügen erfolgreich C:\\Users\\Maximilian Hett\\Desktop\\Studium\\ITZBund\\Praktikuminternes\\Test\\Vorlage5_Bescheid_BZST.docx";
 		assertNotNull(rueckgabe);
 		assertEquals(expected, rueckgabe);
+
 	}
 
 	@Test
